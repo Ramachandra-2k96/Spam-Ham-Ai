@@ -5,10 +5,18 @@ import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import os
 from django.conf import settings
+from collections import Counter
 
 # Load your pre-trained model and vectorizer
 with open(os.path.join(settings.BASE_DIR,'spam_classifier.pkl'), 'rb')as model_file:
-    model = pickle.load(model_file)
+    model1 = pickle.load(model_file)
+with open(os.path.join(settings.BASE_DIR,'spam_classifier_SVC.pkl'), 'rb')as model_file:
+    model2 = pickle.load(model_file)
+with open(os.path.join(settings.BASE_DIR,'spam_classifier_RandomForestClassifier.pkl'), 'rb')as model_file:
+    model3 = pickle.load(model_file)
+with open(os.path.join(settings.BASE_DIR,'spam_classifier_XGBClassifier.pkl'), 'rb')as model_file:
+    model4 = pickle.load(model_file)
+  
     
 with open(os.path.join(settings.BASE_DIR,'vectorizer.pkl'), 'rb') as vectorizer_file:
     vectorizer = pickle.load(vectorizer_file)
@@ -29,8 +37,13 @@ def classify_text(request):
         text_vectorized = vectorizer.transform([text])
         
         # Predict using the loaded model
-        prediction = model.predict(text_vectorized)[0]
-        print('prediction',prediction)
-        return JsonResponse({'result': int(prediction)})
+        prediction1 = model1.predict(text_vectorized)[0]
+        prediction2 = model2.predict(text_vectorized)[0]        
+        prediction3 = model3.predict(text_vectorized)[0]
+        prediction4 = model4.predict(text_vectorized)[0]
+        predictions=[prediction1,prediction2,prediction3,prediction4]
+        counter = Counter(predictions)
+        most_common_prediction = counter.most_common(1)[0][0]
+        return JsonResponse({'result': int(most_common_prediction)})
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
