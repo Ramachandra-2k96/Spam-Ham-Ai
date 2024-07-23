@@ -39,6 +39,7 @@ def classify_text(request):
         prediction2 = model2.predict(text_vectorized)[0]        
         prediction3 = model3.predict(text_vectorized)[0]
         predictions=[prediction1,prediction2,prediction3]
+        print(predictions)
         counter = Counter(predictions)
         most_common_prediction = counter.most_common(1)[0][0]
         return JsonResponse({'result': int(most_common_prediction)})
